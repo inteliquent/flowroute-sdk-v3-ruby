@@ -307,6 +307,7 @@ module FlowrouteNumbersAndMessaging
         )
       end
       validate_response(_context)
+      _context
     end
 
     # Returns a list of all Central Office (exchange) codes containing
