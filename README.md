@@ -1,599 +1,498 @@
-# Getting started
+Flowroute Ruby Library v3
+=====================
 
-The Flowroute APIs are organized around REST. Our APIs have resource-oriented URLs, support HTTP Verbs, and respond with HTTP Status Codes. All API requests and responses, including errors, will be represented as JSON objects. You can use the Flowroute APIs to manage your Flowroute phone numbers including setting primary and failover routes for inbound calls, and sending text messages (SMS and MMS) using long-code or toll-free numbers in your account.
+The Flowroute Ruby library v3 provides methods for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
 
-## How to Build
+**Topics**
 
-This client library is a Ruby gem which can be compiled and used in your Ruby and Ruby on Rails project. This library requires a few gems from the RubyGems repository.
+*   [Requirements](#requirements)
+*   [Installation](#installation)
+*   [Usage](#usage)
+    *   [Controllers](#controllers)
+        * [Numbers Controller](#numberscontroller)
+        * [Routes Controller](#routescontroller)
+        * [Messages Controller](#messagescontroller)
+    *   [Configuration](#configuration)
+        * [Credentials](#credentials)
+        * [API Client and Controllers]
+    *   [Methods](#methods)
+    *   [Errors](#errors)
 
-1. Open the command line interface or the terminal and navigate to the folder containing the source code.
-2. Run ``` gem build flowroute_numbers_and_messaging.gemspec ``` to build the gem.
-3. Once built, the gem can be installed on the current work environment using ``` gem install flowroute_numbers_and_messaging-3.0.0.gem ```
+* * *
+Requirements
+------------
 
-![Building Gem](https://apidocs.io/illustration/ruby?step=buildSDK&workspaceFolder=Flowroute%20Numbers%20and%20Messaging-Ruby&workspaceName=Flowroute%20Numbers%20and%20Messaging-Ruby&projectName=flowroute_numbers_and_messaging&gemName=flowroute_numbers_and_messaging&gemVer=3.0.0)
-
-## Usage
-
-### Initialization
-
-### Authentication
-In order to setup authentication and initialization of the API client, you need the following information.
-
-| Parameter | Description |
-|-----------|-------------|
-| basic_auth_user_name | The username to use with basic authentication |
-| basic_auth_password | The password to use with basic authentication |
+*   Flowroute [API credentials](https://manage.flowroute.com/accounts/preferences/api/)
+*   [Ruby](https://www.ruby-lang.org/en/downloads/) `2.0.0 or higher`
 
 
+* * *
+Installation
+------------
 
-API client can be initialized as following.
+1. First, start a shell session and clone the Ruby library:
+    * via HTTPS: `git clone https://github.com/flowroute/flowroute-sdk-v3-ruby.git`
+
+    * via SSH: `git@github.com:flowroute/flowroute-sdk-v3-ruby.git`
+
+2. Switch to the newly-created `flowroute-sdk-v3-ruby` directory and run the following to build the Flowroute gem:
+`gem build flowroute_numbers_and_messaging.gemspec`
+
+This version of the library has been tested with `Ruby 2.5.0` for Mac OS X. To see which version of `ruby` is installed on your machine, run the following:
+
+`ruby --version`
+
+3. Once built, run the following to install the gem in the current directory:
+
+`gem install flowroute_numbers_and_messaging-3.0.0.gem`
+
+* * *
+Usage
+------------
+In Flowroute's approach to building the Ruby library v3, HTTP requests are handled by controllers named after the API resources they represent: **Numbers**, **Routes**, and **Messages**. These controllers contain the methods used to perform messaging, number management, and route management within the Ruby library.
+
+## Controllers
+
+### NumbersController
+
+Contains all of the methods necessary to search through Flowroute's phone number inventory, purchase a phone number, and review details of your account phone numbers.
+
+*   [list\_available\_area\_codes()](#list_available_area_codes) \- Returns a list of all Numbering Plan Area (NPA) codes containing purchasable phone numbers. All request parameters are optional. If you don't specify a limit, results are limited to the first 10 items.
+*   [list\_available\_exchange\_codes()](#list_available_exchange_codes) \- Returns a list of all Central Office (exchange) codes containing purchasable phone numbers. All request parameters are optional.
+*   [search\_for\_purchasable\_phone\_numbers()](#search_for_purchasable_phone_numbers) \- Searches for purchasable phone numbers by state or rate center, or by your specified search value.
+*   [purchase\_a\_phone\_number(purchasable\_number)](#purchase_a_phone_numbernumber_id) \- Lets you purchase a phone number from available Flowroute inventory.
+*   [list\_account\_phone\_numbers()](#list_account_phone_numbers) \- Returns a list of all phone numbers currently on your Flowroute account. 
+*   [list\_phone\_number\_details(number\_id)](#list_phone_number_detailsnumber_id) \- Returns details on a specific phone number associated with your account, including primary voice route, and failover voice route if previously configured.
+
+### RoutesController
+    
+Contains the methods required to create new inbound routes, view all of your account routes, and update primary and failover voice routes for your phone numbers.
+    
+*   [create\_an\_inbound\_route(route\_body)](#create_an_inbound_routeroute_body) \- Creates a new inbound route which can then be assigned as either a primary or a failover voice route for a phone number on your account.
+*   [list\_inbound\_routes()](#list_inbound_routes) \- Returns a list of your inbound routes. From the list, you can then select routes to use as the primary and failover voice routes for phone numbers on your account.
+*   [update\_primary\_voice\_route(number\_id, route\_body)](#update_primary_voice_routenumber_id-route_body) \- Updates the primary voice route for a phone number. You must create the route first via the `create_an_inbound_route(routebody)` method.
+*   [update\_failover\_voice\_route(number\_id, route\_body)](#update_failover_voice_routenumber_id-route_body) \- Updates the failover voice route for a phone number. You must create the route first via the `create_an_inbound_route(routebody)` method.
+
+###   MessagesController
+    
+Contains the methods required to send an MMS or SMS, and review a specific Message Detail Record (MDR) or a set of messages.
+    
+*   [send\_a\_message(message\_body)](#send_a_messagemessage_body) \- Sends an SMS or MMS from a Flowroute long code or toll-free phone number to another valid phone number.
+*   [look\_up\_a\_message\_detail\_record()](#look_up_a_message_detail_recordmessage_id) \- Searches for a specific message record ID and returns a Message Detail Record (in MDR2 format).
+*   [look\_up\_a\_set\_of\_messages()](#look_up_a_set_of_messagesstart_date) \- Retrieves a list of Message Detail Records (MDRs) within a specified date range. Date and time is based on Coordinated Universal Time (UTC).
+
+The following shows an example of a single Ruby file that imports the Flowroute API client and all the required modules. The Ruby library v3 comes with a **demo.py** file that you can edit and run as an example.
 
 ```ruby
-# Configuration parameters and credentials
-basic_auth_user_name = 'basic_auth_user_name' # The username to use with basic authentication
-basic_auth_password = 'basic_auth_password' # The password to use with basic authentication
+import pprint
+import os
+import json
+import random
+import string
+from flowroutenumbersandmessaging.flowroutenumbersandmessaging_client import FlowroutenumbersandmessagingClient
+```    
+## Configuration
 
-client = FlowrouteNumbersAndMessaging::FlowrouteNumbersAndMessagingClient.new(
-  basic_auth_user_name: basic_auth_user_name,
-  basic_auth_password: basic_auth_password
-)
+### Credentials
+
+In **demo.py**, replace `basic_auth_user_name` with your API Access Key and `basic_auth_password` with your API Secret Key from the [Flowroute Manager](https://manage.flowroute.com/accounts/preferences/api/). Note that in our example, we are accessing your Flowroute credentials as environment variables. To learn more about setting environment variables, see [How To Read and Set Environmental and Shell Variables](https://www.digitalocean.com/community/tutorials/how-to-read-and-set-environmental-and-shell-variables-on-a-linux-vps).
+
+```ruby
+# Set up your api credentials and test mobile number for outbound SMS or MMS
+basic_auth_user_name = os.environ.get('FR_ACCESS_KEY')
+basic_auth_password = os.environ.get('FR_SECRET_KEY')
+mobile_number = "YOUR_MOBILE_NUMBER"
 ```
-
-The added initlization code can be debugged by putting a breakpoint in the ``` Index ``` method and running the project in debug mode by selecting ``` Run -> Debug 'Development: TestApp' ```.
-
-![Debug the TestApp](https://apidocs.io/illustration/ruby?step=addCode4&workspaceFolder=Flowroute%20Numbers%20and%20Messaging-Ruby&workspaceName=FlowrouteNumbersAndMessaging&projectName=flowroute_numbers_and_messaging&gemName=flowroute_numbers_and_messaging&gemVer=3.0.0&initLine=client%2520%253D%2520FlowrouteNumbersAndMessagingClient.new%2528%2527basic_auth_user_name%2527%252C%2520%2527basic_auth_password%2527%2529)
-
-
-
-# Class Reference
-
-## <a name="list_of_controllers"></a>List of Controllers
-
-* [MessagesController](#messages_controller)
-* [NumbersController](#numbers_controller)
-* [RoutesController](#routes_controller)
-
-## <a name="messages_controller"></a>![Class: ](https://apidocs.io/img/class.png ".MessagesController") MessagesController
-
-### Get singleton instance
-
-The singleton instance of the ``` MessagesController ``` class can be accessed from the API Client.
+### Instantiate API Client and Controllers
+Next, instantiate the API Client and its controllers.
 
 ```ruby
+# Instantiate API client and create controllers for Numbers, Messages, and Routes
+client = FlowroutenumbersandmessagingClient(basic_auth_user_name, basic_auth_password)
+numbers_controller = client.numbers
+routes_controller = client.routes
 messages_controller = client.messages
 ```
+## Methods
+The following section will demonstrate the capabilities of Numbers v2 and Messages v2.1 that are wrapped in our Ruby library. Note that the example responses have been formatted using Mac's `pbpaste` and `jq`. To learn more, see [Quickly Tidy Up JSON from the Command Line](http://onebigfunction.com/vim/2015/02/02/quickly-tidying-up-json-from-the-command-line-and-vim/). 
 
-### <a name="get_look_up_a_set_of_messages"></a>![Method: ](https://apidocs.io/img/method.png ".MessagesController.get_look_up_a_set_of_messages") get_look_up_a_set_of_messages
+### Number Management
 
-> Retrieves a list of Message Detail Records (MDRs) within a specified date range. Date and time is based on Coordinated Universal Time (UTC).
+The Flowroute Ruby library v3  allows you to make HTTP requests to the `numbers` resource of Flowroute API v2: `https://api.flowroute.com/v2/numbers`
 
+#### list\_available\_area\_codes()
 
+The method accepts `limit`, `offset`, and `max_setup_cost` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-available-area-codes/).
+    
+##### Example Request
 ```ruby
-def get_look_up_a_set_of_messages(start_date,
-                                      end_date = nil,
-                                      limit = nil,
-                                      offset = nil); end
+print("--List Available Area Codes")
+max_setup_cost = 3.25
+limit = 3
+offset = None
+result = numbers_controller.list_available_area_codes(limit, offset, max_setup_cost)
+pprint.pprint(result)
 ```
 
-#### Parameters
+##### Example Response
 
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| start_date |  ``` Required ```  | The beginning date and time, in UTC, on which to perform an MDR search. The DateTime can be formatted as YYYY-MM-DDor YYYY-MM-DDTHH:mm:ss.SSZ. |
-| end_date |  ``` Optional ```  | The ending date and time, in UTC, on which to perform an MDR search. The DateTime can be formatted as YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.SSZ. |
-| limit |  ``` Optional ```  | The number of MDRs to retrieve at one time. You can set as high of a number as you want, but the number cannot be negative and must be greater than 0 (zero). |
-| offset |  ``` Optional ```  | The number of MDRs to skip when performing a query. The number must be 0 (zero) or greater, but cannot be negative. |
-
-
-#### Example Usage
-
-```ruby
-start_date = DateTime.now
-end_date = DateTime.now
-limit = 61
-offset = 61
-
-result = messages_controller.get_look_up_a_set_of_messages(start_date, end_date, limit, offset)
+On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of area code objects in JSON format.
 
 ```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-### <a name="create_send_a_message"></a>![Method: ](https://apidocs.io/img/method.png ".MessagesController.create_send_a_message") create_send_a_message
-
-> Sends an SMS or MMS from a Flowroute long code or toll-free phone number to another valid phone number.
-
-
-```ruby
-def create_send_a_message(body); end
+{
+  "data": [
+    {
+      "type": "areacode",
+      "id": "201",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/available/exchanges?areacode=201"
+      }
+    },
+    {
+      "type": "areacode",
+      "id": "202",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/available/exchanges?areacode=202"
+      }
+    },
+    {
+      "type": "areacode",
+      "id": "203",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/available/exchanges?areacode=203"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.flowroute.com/v2/numbers/available/areacodes?max_setup_cost=3&limit=3&offset=0",
+    "next": "https://api.flowroute.com/v2/numbers/available/areacodes?max_setup_cost=3&limit=3&offset=3"
+  }
+}
 ```
 
-#### Parameters
+#### list\_available\_exchange\_codes()
 
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| body |  ``` Required ```  | The SMS or MMS message to send. |
+The method accepts `limit`, `offset`, `max_setup_cost`, and `areacode` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-available-exchanges/). 
 
-
-#### Example Usage
-
+##### Example Request
 ```ruby
-body = Message.new
+print("--List Available Exchange Codes")
+limit = 3
+offset = None
+max_setup_cost = None
+areacode = 347
+result = numbers_controller.list_available_exchange_codes(limit, offset, max_setup_cost, areacode)
+pprint.pprint(result)
+```
+##### Example Response
 
-result = messages_controller.create_send_a_message(body)
+On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of exchange objects in JSON format.
 
 ```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 403 | Forbidden – You don't have permission to access this resource. |
-| 404 | The specified resource was not found |
-| 422 | Unprocessable Entity - You tried to enter an incorrect value. |
-
-
-
-### <a name="get_look_up_a_message_detail_record"></a>![Method: ](https://apidocs.io/img/method.png ".MessagesController.get_look_up_a_message_detail_record") get_look_up_a_message_detail_record
-
-> Searches for a specific message record ID and returns a Message Detail Record (in MDR2 format).
-
-
-```ruby
-def get_look_up_a_message_detail_record(id); end
+{
+  "data": [
+    {
+      "type": "exchange",
+      "id": "347215",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/available?starts_with=1347215"
+      }
+    },
+    {
+      "type": "exchange",
+      "id": "347325",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/available?starts_with=1347325"
+      }
+    },
+    {
+      "type": "exchange",
+      "id": "347331",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/available?starts_with=1347331"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.flowroute.com/v2/numbers/available/exchanges?areacode=347&limit=3&offset=0",
+    "next": "https://api.flowroute.com/v2/numbers/available/exchanges?areacode=347&limit=3&offset=3"
+  }
+}
 ```
 
-#### Parameters
+#### search\_for\_purchasable\_phone\_numbers()
 
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| id |  ``` Required ```  | The unique message detail record identifier (MDR ID) of any message. When entering the MDR ID, the number should include the mdr2- preface. |
+The method accepts `starts_with`, `contains`, `ends_with`, `limit`, `offset`, `rate_center`, and `state` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/search-for-purchasable-phone-numbers/).
 
-
-#### Example Usage
-
+##### Example Request
 ```ruby
-id = 'id'
-
-result = messages_controller.get_look_up_a_message_detail_record(id)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-[Back to List of Controllers](#list_of_controllers)
-
-## <a name="numbers_controller"></a>![Class: ](https://apidocs.io/img/class.png ".NumbersController") NumbersController
-
-### Get singleton instance
-
-The singleton instance of the ``` NumbersController ``` class can be accessed from the API Client.
-
-```ruby
-numbers_controller = client.numbers
-```
-
-### <a name="get_account_phone_numbers"></a>![Method: ](https://apidocs.io/img/method.png ".NumbersController.get_account_phone_numbers") get_account_phone_numbers
-
-> Returns a list of all phone numbers currently on your Flowroute account. The response includes details such as the phone number's rate center, state, number type, and whether CNAM Lookup is enabled for that number.
-
-
-```ruby
-def get_account_phone_numbers(starts_with = nil,
-                                  ends_with = nil,
-                                  contains = nil,
-                                  limit = nil,
-                                  offset = nil); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| starts_with |  ``` Optional ```  | Retrieves phone numbers that start with the specified value. |
-| ends_with |  ``` Optional ```  | Retrieves phone numbers that end with the specified value. |
-| contains |  ``` Optional ```  | Retrieves phone numbers containing the specified value. |
-| limit |  ``` Optional ```  | Limits the number of items to retrieve. A maximum of 200 items can be retrieved. |
-| offset |  ``` Optional ```  | Offsets the list of phone numbers by your specified value. For example, if you have 4 phone numbers and you entered 1 as your offset value, then only 3 of your phone numbers will be displayed in the response. |
-
-
-#### Example Usage
-
-```ruby
-starts_with = 61
-ends_with = 61
-contains = 61
-limit = 61
-offset = 61
-
-result = numbers_controller.get_account_phone_numbers(starts_with, ends_with, contains, limit, offset)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-### <a name="get_phone_number_details"></a>![Method: ](https://apidocs.io/img/method.png ".NumbersController.get_phone_number_details") get_phone_number_details
-
-> Lists all of the information associated with any of the phone numbers in your account, including billing method, primary voice route, and failover voice route.
-
-
-```ruby
-def get_phone_number_details(id); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| id |  ``` Required ```  | Phone number to search for which must be a number that you own. Must be in 11-digit E.164 format; e.g. 12061231234. |
-
-
-#### Example Usage
-
-```ruby
-id = 61
-
-result = numbers_controller.get_phone_number_details(id)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized |
-| 404 | Not Found |
-
-
-
-### <a name="create_purchase_a_phone_number"></a>![Method: ](https://apidocs.io/img/method.png ".NumbersController.create_purchase_a_phone_number") create_purchase_a_phone_number
-
-> Lets you purchase a phone number from available Flowroute inventory.
-
-
-```ruby
-def create_purchase_a_phone_number(id); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| id |  ``` Required ```  | Phone number to purchase. Must be in 11-digit E.164 format; e.g. 12061231234. |
-
-
-#### Example Usage
-
-```ruby
-id = 61
-
-result = numbers_controller.create_purchase_a_phone_number(id)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-### <a name="search_for_purchasable_phone_numbers"></a>![Method: ](https://apidocs.io/img/method.png ".NumbersController.search_for_purchasable_phone_numbers") search_for_purchasable_phone_numbers
-
-> This endpoint lets you search for phone numbers by state or rate center, or by your specified search value.
-
-
-```ruby
-def search_for_purchasable_phone_numbers(starts_with = nil,
-                                             contains = nil,
-                                             ends_with = nil,
-                                             limit = nil,
-                                             offset = nil,
-                                             rate_center = nil,
-                                             state = nil); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| starts_with |  ``` Optional ```  | Retrieve phone numbers that start with the specified value. |
-| contains |  ``` Optional ```  | Retrieve phone numbers containing the specified value. |
-| ends_with |  ``` Optional ```  | Retrieve phone numbers that end with the specified value. |
-| limit |  ``` Optional ```  | Limits the number of items to retrieve. A maximum of 200 items can be retrieved. |
-| offset |  ``` Optional ```  | Offsets the list of phone numbers by your specified value. For example, if you have 4 phone numbers and you entered 1 as your offset value, then only 3 of your phone numbers will be displayed in the response. |
-| rate_center |  ``` Optional ```  | Filters by and displays phone numbers in the specified rate center. |
-| state |  ``` Optional ```  | Filters by and displays phone numbers in the specified state. Optional unless a ratecenter is specified. |
-
-
-#### Example Usage
-
-```ruby
-starts_with = 61
-contains = 61
-ends_with = 61
-limit = 61
-offset = 61
-rate_center = 'rate_center'
-state = 'state'
-
+print("--Search for Purchasable Phone Numbers")
+starts_with = 646
+contains = 3
+ends_with = 7
+limit = 3
+offset = None
+rate_center = None
+state = None
 result = numbers_controller.search_for_purchasable_phone_numbers(starts_with, contains, ends_with, limit, offset, rate_center, state)
-
 ```
 
-#### Errors
+##### Example Response
 
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
+On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of phone number objects in JSON format.
 
+```
+{
+  "data": [
+    {
+      "attributes": {
+        "rate_center": "nwyrcyzn01",
+        "value": "16463439507",
+        "monthly_cost": 1.25,
+        "state": "ny",
+        "number_type": "standard",
+        "setup_cost": 1
+      },
+      "type": "number",
+      "id": "16463439507",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/16463439507"
+      }
+    },
+    {
+      "attributes": {
+        "rate_center": "nwyrcyzn01",
+        "value": "16463439617",
+        "monthly_cost": 1.25,
+        "state": "ny",
+        "number_type": "standard",
+        "setup_cost": 1
+      },
+      "type": "number",
+      "id": "16463439617",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/16463439617"
+      }
+    },
+    {
+      "attributes": {
+        "rate_center": "nwyrcyzn01",
+        "value": "16463439667",
+        "monthly_cost": 1.25,
+        "state": "ny",
+        "number_type": "standard",
+        "setup_cost": 3.99
+      },
+      "type": "number",
+      "id": "16463439667",
+      "links": {
+        "related": "https://api.flowroute.com/v2/numbers/16463439667"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.flowroute.com/v2/numbers/available?contains=3&ends_with=7&starts_with=1646&limit=3&offset=0",
+    "next": "https://api.flowroute.com/v2/numbers/available?contains=3&ends_with=7&starts_with=1646&limit=3&offset=3"
+  }
+}
+```
 
+#### purchase\_a\_phone\_number(purchasable\_number)
 
-### <a name="list_available_area_codes"></a>![Method: ](https://apidocs.io/img/method.png ".NumbersController.list_available_area_codes") list_available_area_codes
-
-> Returns a list of all Numbering Plan Area (NPA) codes containing purchasable phone numbers.
-
-
+The method is used to purchase a telephone number from Flowroute's inventory and accepts the phone number `id` as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/purchase-a-phone-number/). In the following example, we assign the `id` of the first phone number in the resulting JSON array as the phone number to be purchased. Note that this function call is currently commented out. Uncomment to test the `purchase_a_phone_number` method.
+##### Example Request
 ```ruby
-def list_available_area_codes(limit = nil,
-                                  offset = nil,
-                                  max_setup_cost = nil); end
+print("--Purchase a Phone Number")
+purchasable_number = result['data'][0]['id'] 
+result = numbers_controller.purchase_a_phone_number(purchasable_number)
 ```
 
-#### Parameters
+#### Example Response
 
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| limit |  ``` Optional ```  | Limits the number of items to retrieve. A maximum of 400 items can be retrieved. |
-| offset |  ``` Optional ```  | Offsets the list of phone numbers by your specified value. For example, if you have 4 phone numbers and you entered 1 as your offset value, then only 3 of your phone numbers will be displayed in the response. |
-| max_setup_cost |  ``` Optional ```  | Restricts the results to the specified maximum non-recurring setup cost. |
+On success, the HTTP status code in the response header is `200 OK` and the response body contains a phone number object in JSON format.
 
+```
+{
+  "data": {
+    "attributes": {
+      "alias": null,
+      "cnam_lookups_enabled": true,
+      "number_type": "standard",
+      "rate_center": "millbrae",
+      "state": "ca",
+      "value": "16502390214"
+    },
+    "id": "16502390214",
+    "links": {
+      "self": "https://api.flowroute.com/v2/numbers/16502390214"
+    },
+    "relationships": {
+      "cnam_preset": {
+        "data": null
+      },
+      "e911_address": {
+        "data": null
+      },
+      "failover_route": {
+        "data": null
+      },
+      "primary_route": {
+        "data": {
+          "id": "0",
+          "type": "route"
+        }
+      }
+    },
+    "type": "number"
+  },
+  "included": [
+    {
+      "attributes": {
+        "alias": "sip-reg",
+        "route_type": "sip-reg",
+        "value": null
+      },
+      "id": "0",
+      "links": {
+        "self": "https://api.flowroute.com/v2/routes/0"
+      },
+      "type": "route"
+    }
+  ],
+  "links": {
+    "self": "https://api.flowroute.com/v2/numbers/16502390214"
+  }
+}
+```
 
-#### Example Usage
+#### list\_account\_phone\_numbers()
 
+The method accepts `starts_with`, `ends_with`, `contains`, `limit`, and `offset` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-phone-numbers/). 
+    
+
+##### Example Request
 ```ruby
-limit = 153
-offset = 153
-max_setup_cost = 153.243678050695
-
-numbers_controller.list_available_area_codes(limit, offset, max_setup_cost)
-
+print("--List Account Phone Numbers")
+starts_with = 201
+ends_with = None
+contains = None
+limit = 3
+offset = None
+result = numbers_controller.list_account_phone_numbers(starts_with, ends_with, contains, limit, offset)
+pprint.pprint(result)
 ```
 
-#### Errors
+##### Example Response
 
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
+On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of phone number objects in JSON format.
 
+```
+{
+  "data": [
+    {
+      "attributes": {
+        "rate_center": "oradell",
+        "value": "12012673227",
+        "alias": null,
+        "state": "nj",
+        "number_type": "standard",
+        "cnam_lookups_enabled": true
+      },
+      "type": "number",
+      "id": "12012673227",
+      "links": {
+        "self": "https://api.flowroute.com/v2/numbers/12012673227"
+      }
+    },
+    {
+      "attributes": {
+        "rate_center": "jerseycity",
+        "value": "12014845220",
+        "alias": null,
+        "state": "nj",
+        "number_type": "standard",
+        "cnam_lookups_enabled": true
+      },
+      "type": "number",
+      "id": "12014845220",
+      "links": {
+        "self": "https://api.flowroute.com/v2/numbers/12014845220"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.flowroute.com/v2/numbers?starts_with=1201&limit=3&offset=0"
+  }
+}
+```
 
+#### list\_phone\_number\_details(number\_id)
 
-### <a name="list_available_exchange_codes"></a>![Method: ](https://apidocs.io/img/method.png ".NumbersController.list_available_exchange_codes") list_available_exchange_codes
+The method accepts the `number_id` as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-phone-number-details/). In the following example, we request the details of the first phone number returned after calling the `list_account_phone_numbers` method.
 
-> Returns a list of all Central Office (exchange) codes containing purchasable phone numbers.
-
-
+##### Example Request
 ```ruby
-def list_available_exchange_codes(limit = nil,
-                                      offset = nil,
-                                      max_setup_cost = nil,
-                                      areacode = nil); end
+print("--List Phone Number Details")
+number_id = result['data'][0]['id']
+result = numbers_controller.list_phone_number_details(number_id)
+pprint.pprint(result)
 ```
 
-#### Parameters
+##### Example Response
 
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| limit |  ``` Optional ```  | Limits the number of items to retrieve. A maximum of 200 items can be retrieved. |
-| offset |  ``` Optional ```  | Offsets the list of phone numbers by your specified value. For example, if you have 4 phone numbers and you entered 1 as your offset value, then only 3 of your phone numbers will be displayed in the response. |
-| max_setup_cost |  ``` Optional ```  | Restricts the results to the specified maximum non-recurring setup cost. |
-| areacode |  ``` Optional ```  | Restricts the results to the specified area code. |
-
-
-#### Example Usage
-
-```ruby
-limit = 153
-offset = 153
-max_setup_cost = 153.243678050695
-areacode = 153
-
-numbers_controller.list_available_exchange_codes(limit, offset, max_setup_cost, areacode)
+On success, the HTTP status code in the response header is `200 OK` and the response body contains a phone number object in JSON format.
 
 ```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-[Back to List of Controllers](#list_of_controllers)
-
-## <a name="routes_controller"></a>![Class: ](https://apidocs.io/img/class.png ".RoutesController") RoutesController
-
-### Get singleton instance
-
-The singleton instance of the ``` RoutesController ``` class can be accessed from the API Client.
-
-```ruby
-routes_controller = client.routes
+{
+  "included": [
+    {
+      "attributes": {
+        "route_type": "sip-reg",
+        "alias": "sip-reg",
+        "value": null
+      },
+      "type": "route",
+      "id": "0",
+      "links": {
+        "self": "https://api.flowroute.com/v2/routes/0"
+      }
+    }
+  ],
+  "data": {
+    "relationships": {
+      "cnam_preset": {
+        "data": null
+      },
+      "e911_address": {
+        "data": null
+      },
+      "failover_route": {
+        "data": null
+      },
+      "primary_route": {
+        "data": {
+          "type": "route",
+          "id": "0"
+        }
+      }
+    },
+    "attributes": {
+      "rate_center": "millbrae",
+      "value": "16502390214",
+      "alias": null,
+      "state": "ca",
+      "number_type": "standard",
+      "cnam_lookups_enabled": true
+    },
+    "type": "number",
+    "id": "16502390214",
+    "links": {
+      "self": "https://api.flowroute.com/v2/numbers/16502390214"
+    }
+  },
+  "links": {
+    "self": "https://api.flowroute.com/v2/numbers/16502390214"
+  }
+}
 ```
-
-### <a name="update_primary_voice_route_for_a_phone_number"></a>![Method: ](https://apidocs.io/img/method.png ".RoutesController.update_primary_voice_route_for_a_phone_number") update_primary_voice_route_for_a_phone_number
-
-> Use this endpoint to update the primary voice route for a phone number. You must create the route first by following "Create an Inbound Route". You can then assign the created route by specifying its value in a PATCH request.
-
-
-```ruby
-def update_primary_voice_route_for_a_phone_number(number_id,
-                                                      body); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| number_id |  ``` Required ```  | The phone number in E.164 11-digit North American format to which the primary route for voice will be assigned. |
-| body |  ``` Required ```  | The primary route to be assigned. |
-
-
-#### Example Usage
-
-```ruby
-number_id = 153
-nil
-routes_controller.update_primary_voice_route_for_a_phone_number(number_id, body)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-### <a name="update_failover_voice_route_for_a_phone_number"></a>![Method: ](https://apidocs.io/img/method.png ".RoutesController.update_failover_voice_route_for_a_phone_number") update_failover_voice_route_for_a_phone_number
-
-> Use this endpoint to update the failover voice route for a phone number. You must create the route first by following "Create an Inbound Route". You can then assign the created route by specifying its value in a PATCH request.
-
-
-```ruby
-def update_failover_voice_route_for_a_phone_number(number_id,
-                                                       body); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| number_id |  ``` Required ```  | The phone number in E.164 11-digit North American format to which the failover route for voice will be assigned. |
-| body |  ``` Required ```  | The failover route to be assigned. |
-
-
-#### Example Usage
-
-```ruby
-number_id = 153
-nil
-routes_controller.update_failover_voice_route_for_a_phone_number(number_id, body)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-### <a name="list_inbound_routes"></a>![Method: ](https://apidocs.io/img/method.png ".RoutesController.list_inbound_routes") list_inbound_routes
-
-> Returns a list of your inbound routes. From the list, you can then select routes to use as the primary and failover routes for a phone number, which you can do via "Update Primary Voice Route for a Phone Number" and "Update Failover Voice Route for a Phone Number".
-
-
-```ruby
-def list_inbound_routes(limit = nil,
-                            offset = nil); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| limit |  ``` Optional ```  | Limits the number of routes to retrieve. A maximum of 200 items can be retrieved. |
-| offset |  ``` Optional ```  | Offsets the list of routes by your specified value. For example, if you have 4 inbound routes and you entered 1 as your offset value, then only 3 of your routes will be displayed in the response. |
-
-
-#### Example Usage
-
-```ruby
-limit = 153
-offset = 153
-
-routes_controller.list_inbound_routes(limit, offset)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized |
-| 404 | Not Found |
-
-
-
-### <a name="create_an_inbound_route"></a>![Method: ](https://apidocs.io/img/method.png ".RoutesController.create_an_inbound_route") create_an_inbound_route
-
-> Creates a new inbound route which can then be associated with phone numbers. Please see "List Inbound Routes" to review the route values that you can associate with your Flowroute phone numbers.
-
-
-```ruby
-def create_an_inbound_route(body); end
-```
-
-#### Parameters
-
-| Parameter | Tags | Description |
-|-----------|------|-------------|
-| body |  ``` Required ```  | The new inbound route to be created. |
-
-
-#### Example Usage
-
-```ruby
-body = NewRoute.new
-
-routes_controller.create_an_inbound_route(body)
-
-```
-
-#### Errors
-
-| Error Code | Error Description |
-|------------|-------------------|
-| 401 | Unauthorized – There was an issue with your API credentials. |
-| 404 | The specified resource was not found |
-
-
-
-[Back to List of Controllers](#list_of_controllers)
-
-
-
-# flowroute-numbers-messaging-ruby
+ 
