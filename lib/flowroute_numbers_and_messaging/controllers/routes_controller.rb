@@ -23,8 +23,7 @@ module FlowrouteNumbersAndMessaging
     # be assigned.
     # @param [void] body Required parameter: The primary route to be assigned.
     # @return void response from the API call
-    def update_primary_voice_route_for_a_phone_number(number_id,
-                                                      body)
+    def update_primary_voice_route(number_id, body)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2/numbers/{number_id}/relationships/primary_route'
@@ -67,8 +66,7 @@ module FlowrouteNumbersAndMessaging
     # @param [void] body Required parameter: The failover route to be
     # assigned.
     # @return void response from the API call
-    def update_failover_voice_route_for_a_phone_number(number_id,
-                                                       body)
+    def update_failover_voice_route(number_id, body)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2/numbers/{number_id}/relationships/failover_route'

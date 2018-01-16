@@ -30,7 +30,7 @@ module FlowrouteNumbersAndMessaging
     # and you entered 1 as your offset value, then only 3 of your phone numbers
     # will be displayed in the response.
     # @return Mixed response from the API call
-    def get_account_phone_numbers(starts_with = nil,
+    def list_account_phone_numbers(starts_with = nil,
                                   ends_with = nil,
                                   contains = nil,
                                   limit = nil,
@@ -92,7 +92,7 @@ module FlowrouteNumbersAndMessaging
     # must be a number that you own. Must be in 11-digit E.164 format; e.g.
     # 12061231234.
     # @return Number26 response from the API call
-    def get_phone_number_details(id)
+    def list_phone_number_details(id)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2/numbers/{id}'
@@ -130,15 +130,17 @@ module FlowrouteNumbersAndMessaging
       validate_response(_context)
 
       # Return appropriate response type.
-      decoded = APIHelper.json_deserialize(_context.response.raw_body)
-      Number26.from_hash(decoded)
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
 
     # Lets you purchase a phone number from available Flowroute inventory.
     # @param [Integer] id Required parameter: Phone number to purchase. Must be
     # in 11-digit E.164 format; e.g. 12061231234.
     # @return Number26 response from the API call
-    def create_purchase_a_phone_number(id)
+    def purchase_a_phone_number(id)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2/numbers/{id}'
@@ -176,8 +178,10 @@ module FlowrouteNumbersAndMessaging
       validate_response(_context)
 
       # Return appropriate response type.
-      decoded = APIHelper.json_deserialize(_context.response.raw_body)
-      Number26.from_hash(decoded)
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
 
     # This endpoint lets you search for phone numbers by state or rate center,
@@ -269,7 +273,7 @@ module FlowrouteNumbersAndMessaging
     # will be displayed in the response.
     # @param [Float] max_setup_cost Optional parameter: Restricts the results to
     # the specified maximum non-recurring setup cost.
-    # @return void response from the API call
+    # @return mixed response from the API call
     def list_available_area_codes(limit = nil,
                                   offset = nil,
                                   max_setup_cost = nil)
@@ -307,7 +311,11 @@ module FlowrouteNumbersAndMessaging
         )
       end
       validate_response(_context)
-      _context
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
 
     # Returns a list of all Central Office (exchange) codes containing
@@ -322,7 +330,7 @@ module FlowrouteNumbersAndMessaging
     # the specified maximum non-recurring setup cost.
     # @param [Integer] areacode Optional parameter: Restricts the results to the
     # specified area code.
-    # @return void response from the API call
+    # @return mixed response from the API call
     def list_available_exchange_codes(limit = nil,
                                       offset = nil,
                                       max_setup_cost = nil,
@@ -362,6 +370,11 @@ module FlowrouteNumbersAndMessaging
         )
       end
       validate_response(_context)
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
   end
 end

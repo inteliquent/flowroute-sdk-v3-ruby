@@ -29,7 +29,7 @@ module FlowrouteNumbersAndMessaging
     # when performing a query. The number must be 0 (zero) or greater, but
     # cannot be negative.
     # @return Mixed response from the API call
-    def get_look_up_a_set_of_messages(start_date,
+    def look_up_a_set_of_messages(start_date,
                                       end_date = nil,
                                       limit = nil,
                                       offset = nil)
@@ -87,7 +87,7 @@ module FlowrouteNumbersAndMessaging
     # @param [Message] body Required parameter: The SMS or MMS message to
     # send.
     # @return Mixed response from the API call
-    def create_send_a_message(body)
+    def send_a_message(body)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2.1/messages'
@@ -145,7 +145,7 @@ module FlowrouteNumbersAndMessaging
     # identifier (MDR ID) of any message. When entering the MDR ID, the number
     # should include the mdr2- preface.
     # @return MDR2 response from the API call
-    def get_look_up_a_message_detail_record(id)
+    def look_up_a_message_detail_record(id)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2.1/messages/{id}'

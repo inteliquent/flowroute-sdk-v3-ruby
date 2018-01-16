@@ -11,7 +11,7 @@ module FlowrouteNumbersAndMessaging
       @http_call_back = http_call_back
 
       @global_headers = {
-        'user-agent' => 'APIMATIC 2.0'
+        'user-agent' => 'Flowroute SDK v3.0'
       }
     end
 
