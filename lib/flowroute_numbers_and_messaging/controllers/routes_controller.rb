@@ -31,15 +31,22 @@ module FlowrouteNumbersAndMessaging
         _query_builder,
         'number_id' => number_id
       )
+      _headers = {
+        'accept': 'application/vnd.api+json',
+        'content-type' => 'application/vnd.api+json; charset=utf-8'
+      }
       _query_url = APIHelper.clean_url _query_builder
+      puts _query_url
 
       # Prepare and execute HttpRequest.
       _request = @http_client.patch(
         _query_url,
-        parameters: body.to_s
+        headers: _headers,
+        parameters: body
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -74,15 +81,22 @@ module FlowrouteNumbersAndMessaging
         _query_builder,
         'number_id' => number_id
       )
+      _headers = {
+        'accept': 'application/vnd.api+json',
+        'content-type' => 'application/vnd.api+json; charset=utf-8'
+      }
       _query_url = APIHelper.clean_url _query_builder
 
       # Prepare and execute HttpRequest.
       _request = @http_client.patch(
         _query_url,
-        parameters: body.to_s
+        headers: _headers,
+        parameters: body
       )
+
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -131,6 +145,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -145,6 +160,12 @@ module FlowrouteNumbersAndMessaging
         )
       end
       validate_response(_context)
+      
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
 
     # Creates a new inbound route which can then be associated with phone
@@ -152,7 +173,7 @@ module FlowrouteNumbersAndMessaging
     # you can associate with your Flowroute phone numbers.
     # @param [NewRoute] body Required parameter: The new inbound route to be
     # created.
-    # @return void response from the API call
+    # @return mixed response from the API call
     def create_an_inbound_route(body)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
@@ -161,17 +182,21 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'content-type' => 'application/json; charset=utf-8'
+        'accept': 'application/vnd.api+json',
+        'content-type' => 'application/vnd.api+json; charset=utf-8'
       }
 
       # Prepare and execute HttpRequest.
       _request = @http_client.post(
         _query_url,
         headers: _headers,
-        parameters: body.to_json
+        parameters: body.to_s
       )
+      puts _request
+
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -186,6 +211,12 @@ module FlowrouteNumbersAndMessaging
         )
       end
       validate_response(_context)
+      
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
   end
 end

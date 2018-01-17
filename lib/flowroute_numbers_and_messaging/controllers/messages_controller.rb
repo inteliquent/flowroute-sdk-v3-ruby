@@ -50,7 +50,7 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json'
+        'accept' => 'application/vnd.api+json'
       }
 
       # Prepare and execute HttpRequest.
@@ -60,6 +60,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -95,18 +96,19 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json',
-        'content-type' => 'application/json; charset=utf-8'
+        'accept': 'application/vnd.api+json',
+        'content-type' => 'application/vnd.api+json; charset=utf-8'
       }
 
       # Prepare and execute HttpRequest.
       _request = @http_client.post(
         _query_url,
         headers: _headers,
-        parameters: body.to_json
+        parameters: body.to_s
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -157,7 +159,7 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json'
+        'accept' => 'application/vnd.api+json'
       }
 
       # Prepare and execute HttpRequest.
@@ -167,6 +169,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -183,8 +186,10 @@ module FlowrouteNumbersAndMessaging
       validate_response(_context)
 
       # Return appropriate response type.
-      decoded = APIHelper.json_deserialize(_context.response.raw_body)
-      MDR2.from_hash(decoded)
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
     end
   end
 end

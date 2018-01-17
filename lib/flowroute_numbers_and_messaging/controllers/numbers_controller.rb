@@ -53,7 +53,7 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json'
+        'accept' => 'application/vnd.api+json'
       }
 
       # Prepare and execute HttpRequest.
@@ -63,6 +63,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -104,7 +105,7 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json'
+        'accept' => 'application/vnd.api+json'
       }
 
       # Prepare and execute HttpRequest.
@@ -114,6 +115,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -152,7 +154,7 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json'
+        'accept' => 'application/vnd.api+json'
       }
 
       # Prepare and execute HttpRequest.
@@ -162,6 +164,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -231,7 +234,7 @@ module FlowrouteNumbersAndMessaging
 
       # Prepare headers.
       _headers = {
-        'accept' => 'application/json'
+        'accept' => 'application/vnd.api+json'
       }
 
       # Prepare and execute HttpRequest.
@@ -241,6 +244,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -297,6 +301,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -356,6 +361,7 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
+      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
