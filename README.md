@@ -784,7 +784,8 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
 The method accepts a message `id` in MDR2 format as a parameter which you can learn more about in the [API Reference](https://developer.flowroute.com/api/messages/v2.1/look-up-a-message-detail-record/). In the following example, we retrieve the details of the first message in our `look_up_a_set_of_messages` search result.
 
 ##### Example Request
-e``ruby
+
+```ruby
 message_id = result['data'][0]['id']
 result = messages_controller.look_up_a_message_detail_record(message_id)
 pp(result)
