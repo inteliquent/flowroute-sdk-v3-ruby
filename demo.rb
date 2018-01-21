@@ -6,7 +6,7 @@ puts("Number/Route Management v2 & Messaging v2.1 Demo")
 # Set up your api credentials and test mobile number for outbound SMS or MMS
 basic_auth_user_name = ENV['FR_ACCESS_KEY'] # Your Flowroute Access Key
 basic_auth_password = ENV['FR_SECRET_KEY'] # Your Flowroute Secret Key
-mobile_number = "YOUR_MOBILE_NUMBER"  
+mobile_number = "YOUR_MOBILE_NUMBER" # Your mobile number; to receive messages sent from your Flowroute account 
 
 
 # Instantiate API client and create controllers for Numbers, Messages, and Routes
