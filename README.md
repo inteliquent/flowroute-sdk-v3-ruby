@@ -105,7 +105,6 @@ The following shows an example of a single Ruby file that imports the Flowroute 
 ```ruby
 require 'flowroute_numbers_and_messaging'
 require 'pp'
-## Configuration
 ```
 ## Configuration
 
