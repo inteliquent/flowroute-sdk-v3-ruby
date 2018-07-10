@@ -36,7 +36,6 @@ module FlowrouteNumbersAndMessaging
         'content-type' => 'application/vnd.api+json; charset=utf-8'
       }
       _query_url = APIHelper.clean_url _query_builder
-      puts _query_url
 
       # Prepare and execute HttpRequest.
       _request = @http_client.patch(
@@ -46,7 +45,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -96,7 +94,6 @@ module FlowrouteNumbersAndMessaging
 
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -145,7 +142,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -192,11 +188,9 @@ module FlowrouteNumbersAndMessaging
         headers: _headers,
         parameters: body.to_s
       )
-      puts _request
 
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -207,6 +201,40 @@ module FlowrouteNumbersAndMessaging
       elsif _context.response.status_code == 404
         raise ErrorException.new(
           'The specified resource was not found',
+          _context
+        )
+      end
+      validate_response(_context)
+      
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
+    end
+
+    def list_edge_strategies()
+      # Prepare query url.
+      _query_builder = Configuration.base_uri.dup
+      _query_builder << '/v2/routes/edge_strategies'
+      _query_url = APIHelper.clean_url _query_builder
+
+      # Prepare and execute HttpRequest.
+      _request = @http_client.get(
+        _query_url
+      )
+      BasicAuth.apply(_request)
+      _context = execute_request(_request)
+
+      # Validate response against endpoint and global error codes.
+      if _context.response.status_code == 401
+        raise APIException.new(
+          'Unauthorized',
+          _context
+        )
+      elsif _context.response.status_code == 404
+        raise APIException.new(
+          'Not Found',
           _context
         )
       end

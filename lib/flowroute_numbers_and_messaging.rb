@@ -40,6 +40,7 @@ require_relative 'flowroute_numbers_and_messaging/models/error_84.rb'
 require_relative 'flowroute_numbers_and_messaging/models/message_type_enum.rb'
 require_relative 'flowroute_numbers_and_messaging/models/number_type_enum.rb'
 require_relative 'flowroute_numbers_and_messaging/models/route_type_enum.rb'
+require_relative 'flowroute_numbers_and_messaging/models/e911.rb'
 
 # Exceptions
 require_relative 'flowroute_numbers_and_messaging/exceptions/api_exception.rb'
@@ -48,11 +49,10 @@ require_relative 'flowroute_numbers_and_messaging/exceptions/error_exception.rb'
 require_relative 'flowroute_numbers_and_messaging/configuration.rb'
 
 # Controllers
-require_relative 'flowroute_numbers_and_messaging/controllers' \
-                 '/base_controller.rb'
-require_relative 'flowroute_numbers_and_messaging/controllers' \
-                 '/messages_controller.rb'
-require_relative 'flowroute_numbers_and_messaging/controllers' \
-                 '/numbers_controller.rb'
-require_relative 'flowroute_numbers_and_messaging/controllers' \
-                 '/routes_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/base_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/messages_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/numbers_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/routes_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/e911_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/cnam_controller.rb'
+require_relative 'flowroute_numbers_and_messaging/controllers/portability_controller.rb'

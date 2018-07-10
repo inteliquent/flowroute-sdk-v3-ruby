@@ -60,7 +60,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -108,7 +107,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -169,7 +167,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -191,5 +188,59 @@ module FlowrouteNumbersAndMessaging
         _context.response.raw_body.to_s.strip.empty?
       decoded
     end
-  end
+
+    def set_account_level_callback(callback_type, callback_url)
+        # Prepare query url.
+        _query_builder = Configuration.base_uri.dup
+        _query_builder << '/v2.1/messages/' + callback_type
+        _query_url = APIHelper.clean_url _query_builder
+
+        # Prepare headers.
+        _headers = {
+          'accept': 'application/vnd.api+json',
+          'content-type' => 'application/vnd.api+json; charset=utf-8'
+        }
+
+        body = {'callback_url': callback_url}
+
+        # Prepare and execute HttpRequest.
+        _request = @http_client.put(
+          _query_url,
+          headers: _headers,
+          parameters: body.to_s
+        )
+        BasicAuth.apply(_request)
+        _context = execute_request(_request)
+
+        # Validate response against endpoint and global error codes.
+        if _context.response.status_code == 401
+          raise ErrorException.new(
+            'Unauthorized – There was an issue with your API credentials.',
+            _context
+          )
+        elsif _context.response.status_code == 403
+          raise ErrorException.new(
+            'Forbidden – You don\'t have permission to access this resource.',
+            _context
+          )
+        elsif _context.response.status_code == 404
+          raise ErrorException.new(
+            'The specified resource was not found',
+            _context
+          )
+        elsif _context.response.status_code == 422
+          raise ErrorException.new(
+            'Unprocessable Entity - You tried to enter an incorrect value.',
+            _context
+          )
+        end
+        validate_response(_context)
+
+        # Return appropriate response type.
+        decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+          _context.response.raw_body.nil? ||
+          _context.response.raw_body.to_s.strip.empty?
+        decoded
+      end
+    end
 end

@@ -22,6 +22,24 @@ module FlowrouteNumbersAndMessaging
       RoutesController.instance
     end
 
+    # Singleton access to e911 controller.
+    # @return [E911Controller] Returns the controller instance.
+    def e911
+      E911Controller.instance
+    end
+
+    # Singleton access to cnam controller.
+    # @return [CNAMController] Returns the controller instance.
+    def cnam
+      CNAMController.instance
+    end
+
+    # Singleton access to porting controller.
+    # @return [PortabilityController] Returns the controller instance.
+    def porting
+      PortabilityController.instance
+    end
+    
     # Returns the configuration class for easy access.
     # @return [Configuration] Returns the actual configuration class.
     def config
