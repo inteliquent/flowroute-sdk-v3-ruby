@@ -31,10 +31,10 @@ module FlowrouteNumbersAndMessaging
     # will be displayed in the response.
     # @return Mixed response from the API call
     def list_account_phone_numbers(starts_with = nil,
-                                  ends_with = nil,
-                                  contains = nil,
-                                  limit = nil,
-                                  offset = nil)
+                                   ends_with = nil,
+                                   contains = nil,
+                                   limit = nil,
+                                   offset = nil)
       # Prepare query url.
       _query_builder = Configuration.base_uri.dup
       _query_builder << '/v2/numbers'
@@ -63,7 +63,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -115,7 +114,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -164,7 +162,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -244,7 +241,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -301,7 +297,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -361,7 +356,6 @@ module FlowrouteNumbersAndMessaging
       )
       BasicAuth.apply(_request)
       _context = execute_request(_request)
-      puts _context.response.status_code
 
       # Validate response against endpoint and global error codes.
       if _context.response.status_code == 401
@@ -382,5 +376,143 @@ module FlowrouteNumbersAndMessaging
         _context.response.raw_body.to_s.strip.empty?
       decoded
     end
+
+    def set_did_alias(did_id, did_alias)
+      # Prepare query url.
+      _query_builder = Configuration.base_uri.dup
+      _query_builder << '/v2/numbers/{did_id}'
+      _query_builder = APIHelper.append_url_with_template_parameters(
+        _query_builder,
+        'did_id' => did_id
+      )
+
+      _query_url = APIHelper.clean_url _query_builder
+      body = '{ "type" : "number", "alias" : "'
+      body << did_alias
+      body << '"}'
+
+      # Prepare and execute HttpRequest.
+      _request = @http_client.patch(
+        _query_url,
+        parameters: body
+      )
+
+      BasicAuth.apply(_request)
+      _context = execute_request(_request)
+
+      # Validate response against endpoint and global error codes.
+      if _context.response.status_code == 401
+        raise APIException.new(
+          'Unauthorized',
+          _context
+        )
+      elsif _context.response.status_code == 404
+        raise APIException.new(
+          'Not Found',
+          _context
+        )
+      end
+      validate_response(_context)
+      
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
+    end
+
+    def release_did(did_id)
+      # Prepare query url.
+      _query_builder = Configuration.base_uri.dup
+      _query_builder << '/v2/numbers/{did_id}'
+      _query_builder = APIHelper.append_url_with_template_parameters(
+        _query_builder,
+        'did_id' => did_id
+      )
+
+      _query_url = APIHelper.clean_url _query_builder
+
+      # Prepare and execute HttpRequest.
+      _request = @http_client.delete(
+        _query_url
+      )
+
+      BasicAuth.apply(_request)
+      _context = execute_request(_request)
+
+      # Validate response against endpoint and global error codes.
+      if _context.response.status_code == 401
+        raise APIException.new(
+          'Unauthorized',
+          _context
+        )
+      elsif _context.response.status_code == 404
+        raise APIException.new(
+          'Not Found',
+          _context
+        )
+      end
+      validate_response(_context)
+      
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
+    end
+
+    def set_didsms_callback(did_id, callback_url)
+
+      # Prepare query url.
+      _query_builder = Configuration.base_uri.dup
+      _query_builder << '/v2/numbers/{did_id}/relationships/dlr_callback'
+      _query_builder = APIHelper.append_url_with_template_parameters(
+        _query_builder,
+        'did_id' => did_id
+      )
+
+      _query_url = APIHelper.clean_url _query_builder
+      body = {
+        "data" => {
+          "attributes" => {
+            "callback_url": callback_url
+          }
+        }
+      }
+      puts(body.to_s)
+
+      # Prepare and execute HttpRequest.
+      _request = @http_client.post(
+        _query_url,
+        parameters: body.to_s,
+        headers: {"Content-Type" => "application/vnd.api+json"}
+      )
+
+      BasicAuth.apply(_request)
+      _context = execute_request(_request)
+      puts(_context.response.status_code)
+      puts(_context.response.raw_body)
+
+      # Validate response against endpoint and global error codes.
+      if _context.response.status_code == 401
+        raise APIException.new(
+          'Unauthorized',
+          _context
+        )
+      elsif _context.response.status_code == 404
+        raise APIException.new(
+          'Not Found',
+          _context
+        )
+      end
+      validate_response(_context)
+      
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body) unless
+        _context.response.raw_body.nil? ||
+        _context.response.raw_body.to_s.strip.empty?
+      decoded
+    end
+
   end
 end
