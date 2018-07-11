@@ -13,6 +13,8 @@ module FlowrouteNumbersAndMessaging
       super(reason)
       @context = context
       @response_code = context.response.status_code
+      puts(context.response.status_code)
+      puts(context.response.raw_body)
     end
   end
 end
