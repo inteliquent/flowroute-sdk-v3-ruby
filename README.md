@@ -12,6 +12,8 @@ The Flowroute Ruby Library v3 provides methods for interacting with [Numbers v2]
         * [Numbers Controller](#numberscontroller)
         * [Routes Controller](#routescontroller)
         * [Messages Controller](#messagescontroller)
+        * [E911s Controller](#e911scontroller)
+        * [CNAMs Controller](#cnamscontroller)
     *   [Configuration](#configuration)
         * [Credentials](#credentials)
         * [API Client and Controllers](#instantiate-api-client-and-controllers)
