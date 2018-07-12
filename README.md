@@ -36,23 +36,23 @@ The Flowroute Ruby Library v3 provides methods for interacting with [Numbers v2]
             *   [look_up_a_message_detail_record](#look_up_a_message_detail_recordmessage_id)
 
         *   [E911 Address Management](#e911-address-management)
-            *   [list_e911s](#)
-            *   [e911_details](#)
-            *   [validate](#)
-            *   [create](#)
-            *   [update](#)
-            *   [associate](#)
-            *   [list_associations](#)
-            *   [unassociate](#)
-            *   [delete](#)
+            *   [list_e911s](#list_e911soptions)
+            *   [e911_details](#e911_detailse911_id)
+            *   [validate](#validatee911_address_to_json)
+            *   [create](#createe911_address_to_json)
+            *   [update](#updatee911_id-e911_addressto_json)
+            *   [associate](#associatenumber_id-e911_id)
+            *   [list_associations](#list_associationse911_id)
+            *   [unassociate](#unassociatenumber_id)
+            *   [delete](#delete_recorde911_id)
         
         *   [CNAM Record Management](#cnam-record-management)
-            *   [list_cnams](#)
-            *   [cnam_details](#)
-            *   [create](#)
-            *   [associate](#)
-            *   [unassociate](#)
-            *   [delete](#)
+            *   [list_cnams](#list_cnamsoptions)
+            *   [cnam_details](#cnam_detailscnam_id)
+            *   [create](#createcnam_value)
+            *   [associate](#associatenumber_id-cnam_id)
+            *   [unassociate](#unassociatenumber_id)
+            *   [delete](#delete_recordcnam_id)
     *   [Errors](#errors)
     *   [Testing](#testing)
 
@@ -123,26 +123,26 @@ Contains the methods required to send an MMS or SMS, and review a specific Messa
 
 Contains all of the methods necessary to create, validate, update, and delete an E911 address on your account as well as assigning an E911 record to a phone number and if necessary, deactivating the E911 service for said phone number.
 
-*   [create(e911\_address\_to\_json())](#) \- Lets you create and validate an E911 address within the US and Canada which can then be assigned to any of the long code or toll-free numbers on your account. To assign an E911 address to your number, see "Assign a Valid E911 Address to Your Phone Number".
-*   [list\_e911s(options)](#) \- Returns a list of all E911 records on your account by default. You can apply search filters using any of the optional query parameters.
-*   [e911\_details(e911\_id)](#) \- Returns details on a specified E911 record ID.
-*   [validate(e911\_address\_to\_json())](#) \- Lets you validate an E911 address whether it is a new or an existing address on your account.
-*   [update(e911\_id, e911\_address\_to\_json())](#) \- Lets you update and validate an existing E911 address on your account. You must create the E911 address first by following "Create and Validate a New E911 Address".
-*   [associate(number\_id, e911\_id)](#) \- Lets you assign a valid E911 address to a specific long code or toll-free phone number in your account. This endpoint does not return an error for subsequent attempts at associating a phone number with the same E911 record. The E911 record assignment charge only occurs on the first successful attempt. Note that you can later assign a different `e911_id` to the same phone number and will be charged accordingly.
-*   [unassociate(number\_id)](#) \- Lets you deactivate the current E911 service for your phone number.
-*   [list\_associations(e911\_id)](#) \- Returns a list of your Flowroute long code or toll-free phone numbers associated with a specified E911 record.
-*   [delete\_record(e911\_id)](#) \- Lets you delete an E911 address associated with your account. You must remove all phone number associations first before you can successfully delete the specified E911 record.
+*   [create(e911\_address\_to\_json())](#createe911_address_to_json) \- Lets you create and validate an E911 address within the US and Canada which can then be assigned to any of the long code or toll-free numbers on your account. To assign an E911 address to your number, see "Assign a Valid E911 Address to Your Phone Number".
+*   [list\_e911s(options)](#list_e911soptions) \- Returns a list of all E911 records on your account by default. You can apply search filters using any of the optional query parameters.
+*   [e911\_details(e911\_id)](#e911_detailse911_id) \- Returns details on a specified E911 record ID.
+*   [validate(e911\_address\_to\_json())](#validatee911_address_to_json) \- Lets you validate an E911 address whether it is a new or an existing address on your account.
+*   [update(e911\_id, e911\_address\_to\_json())](#updatee911_id-e911_addressto_json) \- Lets you update and validate an existing E911 address on your account. You must create the E911 address first by following "Create and Validate a New E911 Address".
+*   [associate(number\_id, e911\_id)](#associatenumber_id-e911_id) \- Lets you assign a valid E911 address to a specific long code or toll-free phone number in your account. This endpoint does not return an error for subsequent attempts at associating a phone number with the same E911 record. The E911 record assignment charge only occurs on the first successful attempt. Note that you can later assign a different `e911_id` to the same phone number and will be charged accordingly.
+*   [unassociate(number\_id)](#unassociatenumber_id) \- Lets you deactivate the current E911 service for your phone number.
+*   [list\_associations(e911\_id)](#list_associationse911_id) \- Returns a list of your Flowroute long code or toll-free phone numbers associated with a specified E911 record.
+*   [delete\_record(e911\_id)](#delete_recorde911_id) \- Lets you delete an E911 address associated with your account. You must remove all phone number associations first before you can successfully delete the specified E911 record.
 
 ### CNAMsController
 
 Contains all of the methods necessary to create, delete, assign and unassign CNAM records, as well as view and filter for specific CNAM records on your Flowroute account.
 
-*   [create(cnam\_value)](#) \- Lets you create a Caller ID record for your account which can then be assigned to any of your long code numbers. To assign a CNAM record to your number, see "Assign a CNAM Record to a Phone Number".
-*   [list\_cnams(options)](#) \- Returns a list of all CNAM records on your account by default. You can apply search filters using any of the optional query parameters.
-*   [cnam\_details(cnam\_id)](#) \- Returns details pertaining to a specific CNAM record on your account, including long code numbers that are associated with the record.
-*   [associate(number\_id, cnam\_id)](#) \- Lets you associate a CNAM record with a specified long code number on your account. The CNAM value will be the Caller ID name displayed when making outbound calls on the specified long code number. Your CNAM must be approved before you can associate it with a number. Note that CNAM association with a phone number takes 5-7 business days.
-*   [unassociate(number\_id)](#) \- Lets you unassign a CNAM record associated with a specified long code number on your account without deleting the CNAM record itself.
-*   [delete\_record(cnam\_id)](#) \- Lets you delete a CNAM record from your account. This will automatically disassociate all numbers associated with this CNAM record.
+*   [create(cnam\_value)](#createcnam_value) \- Lets you create a Caller ID record for your account which can then be assigned to any of your long code numbers. To assign a CNAM record to your number, see "Assign a CNAM Record to a Phone Number".
+*   [list\_cnams(options)](#list_cnamsoptions) \- Returns a list of all CNAM records on your account by default. You can apply search filters using any of the optional query parameters.
+*   [cnam\_details(cnam\_id)](#cnam_detailscnam_id) \- Returns details pertaining to a specific CNAM record on your account, including long code numbers that are associated with the record.
+*   [associate(number\_id, cnam\_id)](#associatenumber_id-cnam_id) \- Lets you associate a CNAM record with a specified long code number on your account. The CNAM value will be the Caller ID name displayed when making outbound calls on the specified long code number. Your CNAM must be approved before you can associate it with a number. Note that CNAM association with a phone number takes 5-7 business days.
+*   [unassociate(number\_id)](#unassociatenumber_id) \- Lets you unassign a CNAM record associated with a specified long code number on your account without deleting the CNAM record itself.
+*   [delete\_record(cnam\_id)](#delete_recordcnam_id) \- Lets you delete a CNAM record from your account. This will automatically disassociate all numbers associated with this CNAM record.
 
 The following shows an example of a single Ruby file that imports the Flowroute API client and all the required modules. The Ruby library v3 comes with a **demo.rb** file that you can edit and run as an example.
 
@@ -1171,7 +1171,7 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
   }
 }
 ```
-#### (number_id) 
+#### unassociate(number_id) 
 
 The method accepts `number_id` as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/deactivate-e911-service-for-phone-number/). In the following example, we deactivate the E911 service for our previously assigned phone number ID.
 
@@ -1329,12 +1329,12 @@ The method accepts a Caller ID value as a parameter which you can learn more abo
 | CNAM Storage Rules |
 | ------------------- |
 | You can enter up to 15 characters for your CNAM value at least one of which is a letter. |
-| While most CNAM presets can be approved, the following are not allowed and must be rejected: 
-    -  Consist of curse words and/or is inappropriate.
-    -  A phone number (CNAM must be a name not a number)
-       - If the CNAM preset which the customer has submitted appears to be misleading such as:
-       - Political Figures or Places (Obama, Barack or The White House)
-       - False or fake CNAM (Seattle Police) |
+| While most CNAM presets can be approved, the following are not allowed and must be rejected: |
+|    -  Consist of curse words and/or is inappropriate. |
+|    -  A phone number (CNAM must be a name not a number) |
+|       - If the CNAM preset which the customer has submitted appears to be misleading such as: |
+|       - Political Figures or Places (Obama, Barack or The White House) |
+|       - False or fake CNAM (Seattle Police) |
     
 ##### Example Request
 ```
