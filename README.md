@@ -907,7 +907,7 @@ pp(result)
 On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of e911 objects in JSON format. 
 
 ```
---List Account E911 Addresses
+---List E911 Records
 {
   "data": [
     {
@@ -994,7 +994,7 @@ pp(result)
 On success, the HTTP status code in the response header is `200 OK` and the response body contains a detailed e911 object in JSON format. 
 
 ```
---Show E911 Detail
+---Show E911 Detail
 {
   "data": {
       "attributes": {
@@ -1046,6 +1046,7 @@ The method accepts an E911 object with its different attributes as a parameter. 
 puts("---Create an E911 Address")
 e911_record = FlowrouteNumbersAndMessaging::E911.new('N Vassault', '3910', 'SUITE', '200', 'Tacoma', 'WA', '98407', 'US', 'Janet', 'Doe', 'Home')
 result = e911_controller.create(e911_record.to_json())
+pp(result)
 ```
 
 ##### Example Response
@@ -1053,7 +1054,7 @@ result = e911_controller.create(e911_record.to_json())
 On success, the HTTP status code in the response header is `201 Created` and the response body contains the newly created e911 object in JSON format. On error, a printable representation of the detailed API response is displayed.
 
 ```
---Create an E911 Address
+---Create an E911 Address
 {
   "data": {
     "attributes": {
@@ -1205,7 +1206,7 @@ pp(result)
 On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
 
 ```
---Delete an E911 Record
+---Delete an E911 Record
 nil (204 No Content)
 ```
 
@@ -1219,12 +1220,12 @@ The Flowroute Ruby Library v3 allows you to make HTTP requests to the `cnams` re
 
 #### list_cnams(options) 
 
-The method accepts `limit`, `offset`, and two-character abbreviated `state` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/). In the following example request, we will only retrieve 3 approved CNAM records. 
+The method accepts `limit`, `offset`, and  `is_approved` boolean status as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/). In the following example request, we will only retrieve 3 approved CNAM records. 
     
 ##### Example Request
 ```
 puts("---List Approved CNAM Records")
-result = cnam_controller.list_cnams(10, 0, 'true')
+result = cnam_controller.list_cnams(3, 0, 'true')
 cnam_id = result['data'][0]['id']
 pp(result)
 ```
@@ -1334,7 +1335,7 @@ The method accepts a Caller ID value as a parameter which you can learn more abo
 | While most CNAM presets can be approved, the following are not allowed and must be rejected: |
 |    -  Consist of curse words and/or is inappropriate. |
 |    -  A phone number (CNAM must be a name not a number) |
-|       - If the CNAM preset which the customer has submitted appears to be misleading such as: |
+|    -  If the CNAM preset which the customer has submitted appears to be misleading such as: |
 |       - Political Figures or Places (Obama, Barack or The White House) |
 |       - False or fake CNAM (Seattle Police) |
     
@@ -1427,6 +1428,7 @@ pp(result)
 On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
 
 ```
+---Delete a CNAM Record 24169
 nil (204 No Content)
 ```
 
