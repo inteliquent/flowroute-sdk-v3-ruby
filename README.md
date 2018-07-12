@@ -1,7 +1,7 @@
 Flowroute Ruby Library v3
 =====================
 
-The Flowroute Ruby Library v3 provides methods for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) &endash; which includes inbound voice routes, E911 addresses, and CNAM storage &endash; and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
+The Flowroute Ruby Library v3 provides methods for interacting with [Numbers v2](https://developer.flowroute.com/api/numbers/v2.0/) &ndash; which includes inbound voice routes, E911 addresses, and CNAM storage &ndash; and [Messages v2.1](https://developer.flowroute.com/api/messages/v2.1/) of the [Flowroute](https://www.flowroute.com) API.
 
 **Topics**
 
