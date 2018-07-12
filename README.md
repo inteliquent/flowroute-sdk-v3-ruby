@@ -1213,28 +1213,25 @@ The Flowroute Ruby Library v3 allows you to make HTTP requests to the `cnams` re
 
 | API Reference Pages |
 | ------------------- |
-| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch in a few weeks. |
+| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch next week. |
 
-#### list_cnams(options, callback) 
+#### list_cnams(options) 
 
-The method accepts a callback function and all the different CNAM query parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/). In the following example request, we will only retrieve 3 approved CNAM records. 
+The method accepts `limit`, `offset`, and two-character abbreviated `state` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/). In the following example request, we will only retrieve 3 approved CNAM records. 
     
 ##### Example Request
 ```
-var account_cnams = cnams_controller.listAccountCNAMRecords(limit=3, offset=null, isApproved=true, callback);
-account_cnams.then(method(response) {
-    console.log("--List Approved CNAM Records")
-    console.log(JSON.stringify(response, null, 2));
-}, method(err) {
-  console.log(err);
-});
+puts("---List Approved CNAM Records")
+result = cnam_controller.list_cnams(10, 0, 'true')
+cnam_id = result['data'][0]['id']
+pp(result)
 ```
 ##### Example Response
 
 On success, the HTTP status code in the response header is `200 OK` and the response body contains an array of cnam objects in JSON format.
 
 ```
---List Approved CNAM Records
+---List Approved CNAM Records
 {
   "data": [
     {
@@ -1286,26 +1283,23 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
   }
 }
 ```
-#### listCNAMRecordDetails(cnamId, callback)
+#### cnam_details(cnam_id)
 
-The method accepts a CNAM record ID and a callback function as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-cnam-record-details/). In the following example, assign the ID of the first record returned from our previous API query and retrieve the details of that specific CNAM record. 
+The method accepts a CNAM record ID as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-cnam-record-details/). In the following example, we assign the ID of the first record returned from our previous API query and retrieve the details of that specific CNAM record. 
     
 ##### Example Request
 ```
-var cnam_details = cnams_controller.listCNAMRecordDetails(22790, callback)
-cnam_details.then(method(response) {
-    console.log("--List CNAM Record Details")
-    console.log(JSON.stringify(response, null, 2));
-}, method(err) {
-  console.log(err);
-});
+puts("---Get Details for a CNAM Record")
+cnam_id = result['data'][0]['id']
+result = cnam_controller.cnam_details(cnam_id)
+pp(result)
 ```
 ##### Example Response
 
 On success, the HTTP status code in the response header is `200 OK` and the response body contains a detailed cnam object in JSON format.
 
 ```
---List CNAM Record Details
+---Get Details for a CNAM Record
 {
   "data": {
     "attributes": {
@@ -1328,9 +1322,22 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
   }
 }
 ```
-#### createANewCNAMRecord(body, mContentType, callback)
+#### create(cnam_value)
 
-The method accepts a Caller ID value, content type of `application/vnd.api+json`, and a callback function as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). Note that you can enter up to 15 characters for your CNAM value.
+The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). 
+Note that you can enter up to 15 characters for your CNAM value at least one of which is a letter. While most CNAM presets can be approved, the following are not allowed and must be rejected:
+
+| CNAM Storage Rules |
+| ------------------- |
+| - You can enter up to 15 characters for your CNAM value at least one of which is a letter. |
+| - While most CNAM presets can be approved, the following are not allowed and must be rejected: 
+  
+   -  Consist of curse words and/or is inappropriate.
+   -  A phone number (CNAM must be a name not a number)
+   - If the CNAM preset which the customer has submitted appears to be misleading such as:
+
+      - Political Figures or Places (Obama, Barack or The White House)
+      - False or fake CNAM (Seattle Police) |
     
 ##### Example Request
 ```
@@ -1438,18 +1445,6 @@ On success, the HTTP status code in the response header is `204 No Content` whic
 
 ```
 204 No Content
-#### list\_available\_area\_cod()
-
-The method accepts `limit`, `offset`, and `max_setup_cost` as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-available-area-codes/).
-    
-##### Example Request
-```ruby
-puts("--List Available Area Codes")
-max_setup_cost = 3.25
-limit = 3
-offset = nil
-result = numbers_controller.list_available_area_codes(limit, offset, max_setup_cost)
-pp(result)
 ```
 
 ##### Example Response
