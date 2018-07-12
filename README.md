@@ -1032,7 +1032,7 @@ pp(result)
 
 On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
 
-`204 No Content`
+`nil (204 No Content)`
 
 #### create(e911_address_to_json()) 
 
@@ -1135,7 +1135,7 @@ On success, the HTTP status code in the response header is `204 No Content` whic
 
 ```
 ---Associate an E911 Address with a DID
-204 No Content
+nil (204 No Content)
 ```
 
 #### list_associations(e911_id) 
@@ -1186,7 +1186,7 @@ On success, the HTTP status code in the response header is `204 No Content` whic
 
 ```
 ---Un-associate an E911 Record from a DID
-204 No Content
+nil (204 No Content)
 ```
 #### delete_record(e911_id) 
 
@@ -1204,7 +1204,7 @@ On success, the HTTP status code in the response header is `204 No Content` whic
 
 ```
 --Delete an E911 Record
-204 No Content
+nil (204 No Content)
 ```
 
 ### CNAM Record Management
@@ -1324,31 +1324,24 @@ On success, the HTTP status code in the response header is `200 OK` and the resp
 ```
 #### create(cnam_value)
 
-The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). 
-Note that you can enter up to 15 characters for your CNAM value at least one of which is a letter. While most CNAM presets can be approved, the following are not allowed and must be rejected:
+The method accepts a Caller ID value as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/create-a-new-cnam-record/). In the following example, we will reference our previously declared variable, `route_alias`, and pass the string as our CNAM value to the `create` method.
 
 | CNAM Storage Rules |
 | ------------------- |
-| - You can enter up to 15 characters for your CNAM value at least one of which is a letter. |
-| - While most CNAM presets can be approved, the following are not allowed and must be rejected: 
-  
-   -  Consist of curse words and/or is inappropriate.
-   -  A phone number (CNAM must be a name not a number)
-   - If the CNAM preset which the customer has submitted appears to be misleading such as:
-
-      - Political Figures or Places (Obama, Barack or The White House)
-      - False or fake CNAM (Seattle Police) |
+| You can enter up to 15 characters for your CNAM value at least one of which is a letter. |
+| While most CNAM presets can be approved, the following are not allowed and must be rejected: 
+    -  Consist of curse words and/or is inappropriate.
+    -  A phone number (CNAM must be a name not a number)
+       - If the CNAM preset which the customer has submitted appears to be misleading such as:
+       - Political Figures or Places (Obama, Barack or The White House)
+       - False or fake CNAM (Seattle Police) |
     
 ##### Example Request
 ```
-var new_cnam = { "value":"Heartwood" };
-var create_cnam = cnams_controller.createANewCNAMRecord(new_cnam, mContentType="application/vnd.api+json", callback);
-create_cnam.then(method(response) {
-    console.log("--Create a CNAM Record")
-    console.log(JSON.stringify(response, null, 2));
-}, method(err) {
-  console.log(err);
-});
+puts("---Create a CNAM Record " + route_alias.to_s)
+result = cnam_controller.create(route_alias.to_s)
+new_cnam_id = result['data']['id']
+pp(result)
 ```
 
 ##### Example Response
@@ -1356,7 +1349,7 @@ create_cnam.then(method(response) {
 On success, the HTTP status code in the response header is `201 Created` and the response body contains the newly created cnam object in JSON format. Note that CNAM records take up to 48 hours to be approved on your account and further association with a phone number takes 5-7 business days.
 
 ```
---Create a CNAM Record
+---Create a CNAM Record
 {
   "data": {
     "attributes": {
@@ -1364,58 +1357,50 @@ On success, the HTTP status code in the response header is `201 Created` and the
       "creation_datetime": "2018-07-10 23:14:28.529156+00:00",
       "is_approved": false,
       "rejection_reason": null,
-      "value": "HEARTWOOD"
+      "value": "AH76WX"
     },
-    "id": "24141",
+    "id": "24169",
     "links": {
-      "self": "https://api.flowroute.com/v2/cnams/24141"
+      "self": "https://api.flowroute.com/v2/cnams/24169"
     },
     "type": "cnam"
   }
 }
 ```
-#### updateAssignACNAMRecordToYourPhoneNumber(numberId, cnamId, callback) 
+#### associate(number_id, cnam_id) 
 
-The method accepts a callback function, a CNAM record ID, and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-cnam-record-to-phone-number/). In the following example, we will associate our previously used phone number, `12062011682`, with our known approved CNAM record, `22790`.
+The method accepts a CNAM record ID and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/assign-cnam-record-to-phone-number/). In the following example, we will associate our previously declared `number_id` with our previously declared `cnam_id` for the "Get Details for a CNAM Record" method call.
     
 ##### Example Request
 ```
-var associate_cnam = cnams_controller.updateAssignACNAMRecordToYourPhoneNumber(numberID=12062011682, cnamID=22790, callback);
-associate_cnam.then(method(response) {
-    console.log("--Associate a CNAM Record with a Phone Number")
-    console.log(JSON.stringify(response, null, 2));
-}, method(err) {
-  console.log(err);
-});
+puts("---Associate a CNAM Record with a DID " + number_id + " with " + cnam_id)
+result = cnam_controller.associate(number_id, cnam_id)
+pp(result)
 ```
 
 ##### Example Response
 On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes dictionary containing the `date_created` field and the assigned cnam object in JSON format. This request will fail if the CNAM you are trying to associate has not yet been approved.
 ```
---Associate a CNAM Record with a Phone Number
+---Associate a CNAM Record with a DID
 {'data': {'attributes': {'date_created': 'Fri, 01 Jun 2018 00:17:52 GMT'},
           'id': 22790,
           'type': 'cnam'}}
 ```
-#### deleteUnassignACNAMRecordFromYourPhoneNumber(numberId, callback) 
+#### unassociate(number_id) 
 
-The method accepts a callback function and a phone number as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/unassign-a-cnam-record-from-phone-number/). In the following example, we will disassociate the same phone number that we've used in `updateAssignACNAMRecordToYourPhoneNumber()`. 
+The method accepts a phone number as a parameter which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/unassign-a-cnam-record-from-phone-number/). In the following example, we will disassociate the same phone number that we've used in the "Associate a CNAM Record with a DID" method call. 
     
 ##### Example Request
 ```
-var disassociate_cnam = cnams_controller.deleteUnassignACNAMRecordFromYourPhoneNumber(12065014286, callback)
-disassociate_cnam.then(method(response) {
-    console.log("--Unassign a CNAM Record from a Phone Number")
-    console.log(JSON.stringify(response, null, 2));
-}, method(err) {
-  console.log(err);
-});
+puts("---Un-associate a CNAM Record from a DID " + number_id)
+result = cnam_controller.unassociate(number_id)
+pp(result)
 ```
 ##### Example Response
-On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be deleted, and the updated cnam object in JSON format. 
+On success, the HTTP status code in the response header is `202 Accepted` and the response body contains an attributes object with the date the CNAM was requested to be disassociated from the phone number, and the updated cnam object in JSON format.
 
 ```
---Unassign a CNAM Record from a Phone Number
+---Un-associate a CNAM Record from a DID
 {
   "data": {
     "attributes": {
@@ -1426,25 +1411,21 @@ On success, the HTTP status code in the response header is `202 Accepted` and th
   }
 }
 ```
-#### deleteACNAMRecord(cnamId, callback)
+#### delete_record(cnam_id)
 
-The method accepts a callback function and a CNAM record ID as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-cnam-record-from-account/). In the following example, we will be deleting our previously assigned `cnam_id` in the last function call. 
+The method accepts a CNAM record ID as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/remove-cnam-record-from-account/). In the following example, we will be deleting our previously assigned `new_cnam_id` which is the ID of our newly created CNAM record. 
     
 ##### Example Request
 ```
-var delete_cnam = cnams_controller.deleteACNAMRecord(22790, callback)
-delete_cnam.then(method(response) {
-    console.log("--Delete a CNAM Record")
-    console.log(JSON.stringify(response, null, 2));
-}, method(err) {
-  console.log(err);
-});
+puts("---Delete a CNAM Record " + new_cnam_id)
+result = cnam_controller.delete_record(new_cnam_id)
+pp(result)
 ```
 ##### Example Response
 On success, the HTTP status code in the response header is `204 No Content` which means that the server successfully processed the request and is not returning any content.
 
 ```
-204 No Content
+nil (204 No Content)
 ```
 
 ##### Example Response
