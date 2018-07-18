@@ -1214,10 +1214,6 @@ nil (204 No Content)
 
 The Flowroute Ruby Library v3 allows you to make HTTP requests to the `cnams` resource of Flowroute API v2: `https://api.flowroute.com/v2/cnams`.
 
-| API Reference Pages |
-| ------------------- |
-| The E911 and CNAM API reference pages are currently restricted to our beta customers, which means that all API reference links below currently return a `404 Not Found`. They will be publicly available during our E911 and CNAM APIs GA launch next week. |
-
 #### list_cnams(options) 
 
 The method accepts `limit`, `offset`, and  `is_approved` boolean status as parameters which you can learn more about in the [API reference](https://developer.flowroute.com/api/numbers/v2.0/list-account-cnam-records/). In the following example request, we will only retrieve 3 approved CNAM records. 
